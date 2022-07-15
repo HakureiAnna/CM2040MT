@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script type="text/javascript" src="/scripts/utils.js"></script>
+        <link rel="stylesheet" href="/css/style.css"/>
+        <title>MySmartHome - <%= mode == 0? 'Add': mode == 1? 'Update': 'Remove ' %> Device</title>
+    </head>
+    <body>
+        <%- include('./partials/navbar.html') %>
+       
+        <% 
+        var now = null;
+        var readyTime = null;
+        var duration = null;
+        if (mode == 0) { 
+            now = new Date((new Date()).getTime() + new Date().getTimezoneOffset() * -60 * 1000).toISOString().slice(0, 19);
+        } else {            
+            readyTime = new Date((device.readytime?new Date(device.readytime): new Date()).getTime() + new Date().getTimezoneOffset() * -60 * 1000).toISOString().slice(0, 19);
+            duration = device.duration? device.duration.slice(0, 5): '00:30';
+        } %>        
+        <% if (mode == 0) { %>                
+        <form action="/devices/add" method="post">
+        <% } else if (mode == 1) { %>
+        <form action="/devices/update" method="post">
+            <input type="hidden" name="id" id="id" value="<%= device.id %>" />
+            <input type="hidden" name="deviceType" id="deviceType" value="<%= device.deviceType %>"/>       
+        <% } else if (mode == 2) { %>
+            <form action="/devices/delete" method="post">
+        <% } else if (mode == 3) { %>
+        <form action="/" method="post">
+        <% } %>
+            <table>
+                <% if (locals.errors) { %>
+                    <tr>
+                        <td colspan="2">
+                            <ul>
+                                <% errors.forEach((error) => { %>
+                                     <li class="error"><%= error %></li>
+                                 <% }); %>
+                            </ul>
+                        </td>
+                    </tr>
+                <% } %>
+                <tr>
+                    <td class="align-right">Name:</td>
+                    <td>
+                        <input type="text" name="name" id="name" value="<%= mode==0?"": device.name%>" <%= mode<2? "": " disabled" %> />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="align-right">Device Type:</td>
+                    <td>
+                        <% if (mode == 0) { %>
+                        <select name="deviceType" id="deviceType" onchange="handleDeviceChange(this.value)">
+                            <% deviceTypes.forEach((type) => { %>
+                                <option value="<%= type.id %>" title="<%= type.description %>" <%= type.id == deviceType.id? "selected": "" %>><%= type.type %></option>
+                            <% }); %>
+                        </select>
+                        <% } else { %>
+                            <%= device.type %>
+                        <% } %>
+                    </td>                    
+                </tr>
+                <tr>
+                    <td class="align-right">Location:</td>
+                    <td>
+                        <% if (mode < 2) { %>                    
+                            <select name="location" id="location">
+                                <% locations.forEach((location) => { %>
+                                    <option value="<%= location.id %>" <%= mode==1 && location.id==device.location? "selected": "" %>><%= location.location %></option>
+                                <% }) %>
+                            </select>                       
+                        <% } else { %>
+                            <%= device.locationName %>
+                        <% } %>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="align-right">Ready By Time:</td>
+                    <td>
+                        <input type="datetime-local" id="readyTime" name="readyTime" value="<%= mode==0? now: readyTime %>" <%= mode<2? "": " disabled" %> /></td>
+                </tr>
+                <tr>
+                    <td class="align-right">Turn On For (Duration):</td>
+                    <td><input type="text" id="duration" name="duration" pattern="^([01][0-9]|2[0-3]):([0-5][0-9])$" value="<%= mode==0? '00:30' : duration %>" <%= mode<2? "": " disabled" %> ></td>
+                </tr>
+                <tr>
+                    <td class="align-right">Mode:</td>
+                    <td>
+                        <input type="range" min="<%= deviceType.mode_min %>" max="<%= deviceType.mode_max %>" step="1" id="mode" value="<%= mode == 0? 0: device.mode %>" name="mode" onchange="updateDisplay('dspMode', this.value)" <%= mode<2? "": " disabled" %> />
+                        <label for="mode" id="dspMode"><%= mode==0? deviceType.mode_min: device.mode %></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="align-right">On/ Off:</td>
+                    <td><input type="checkbox" id="status" name="status" <%= mode > 0 && device.status? "checked": ""%> <%= mode<2? "": " disabled" %> /></td>
+                </tr>
+                <% if (deviceType.volume) { %>
+                <tr>
+                    <td class="align-right">Volume:</td>
+                    <td>
+                        <input type="range" name="volume" id="volume" step="1" min="<%= deviceType.vol_min %>" max="<%= deviceType.vol_max %>" value="<%= mode==0? deviceType.vol_min: device.volume %>" onchange="updateDisplay('dspVolume', this.value)" <%= mode<2? "": " disabled" %> />
+                        <label for="volume" id="dspVolume"><%= mode == 0? deviceType.vol_min: device.voluume %></label>
+                    </td>
+                </tr>
+                <% } %>
+                <% if (deviceType.temperature ) { %>
+                <tr>
+                    <td class="align-right">Temperature:</td>
+                    <td>
+                        <input type="range" name="temperature" id="temperature" step="1" min="<%= deviceType.tmp_min %>" max="<%= deviceType.tmp_max %>" value="<%= mode==0? deviceType.tmp_min: device.temperature %>" onchange="updateDisplay('dspTemperature', this.value)" <%= mode<2? "": "disabled" %> />
+                        <label for="temperature" id="dspTemperature"><%= mode==0? deviceType.tmp_min: device.temperature %></label>
+                    </td>
+                </tr>
+                <% } %>
+                <% if (deviceType.brightness) { %>
+                <tr>
+                    <td class="align-right">Brightness:</td>
+                    <td>
+                        <input type="range" name="brightness" id="brightness" step="1" min="<%= deviceType.brg_min %>" max="<%= deviceType.brg_max %>" value="<%= mode==0? deviceType.brg_min: device.brightness %>" onchange="updateDisplay('dspBrightness', this.value)" <%= mode<2? "": "disabled" %> />
+                        <label for="brightness" id="dspBrightness"><%= mode==0? deviceType.brg_min: device.brightness %></label>
+                    </td>
+                </tr>
+                <% } %>
+                <tr>
+                    <td class="align-right">Description:</td>
+                    <td><input type="text" id="description" name="description" value="<%= mode==0? "": device.description %>" <%= mode<2? "": "disabled" %>/></td>
+                </tr>
+                
+                <% if (mode == 2) { %>
+                    <tr>
+                        <td colspan="2">Are you sure you want to delete the above device?</td>
+                    </tr>
+                <% } %>
+                <tr>
+                    <td></td>
+                    <td>
+                        <% if (mode==0) { %>
+                        <input class="btn btn-new" type="submit" value="Add"/>
+                        <a href="/devices" class="btn btn-remove">Cancel</a>
+                        <% } else if (mode == 1) { %>                            
+                        <input class="btn btn-update" type="submit" value="Update"/>
+                        <a href="/devices" class="btn btn-remove">Cancel</a>
+                        <% } else if (mode == 2) { %>      
+                            <input class="btn btn-remove" type="submit" value="Yes"/>
+                            <a href="/devices" class="btn btn-cancel">No</a>
+                        <% } else if (mode == 3) { %>       
+                            <a class="btn btn-update" href="/devices/<%= device.id %>/update">Update</a>
+                            <a class="btn btn-remove" href="/devices/<%= device.id %>/delete">Remove</a>
+                            <a class="btn btn-cancel" href="/devices">Back</a>                
+                        <% } %>
+                    </td>
+                </tr>
+            </table>              
+        </form>
+        <%- include('./partials/footer.html') %>
+    </body>
+</html>

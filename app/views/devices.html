@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel="stylesheet" href="/css/style.css"/>
+        <title>MySmartHome - Devices</title>
+    </head>
+    <body>
+        <%- include('./partials/navbar.html') %>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Location</th>
+                <th>Operations</th>
+            </tr>
+            <% devices.forEach(function(d) { %>
+                <tr>
+                    <td><%= d.name %></td>
+                    <td><%= d.type %></td>
+                    <td><%= d.locationName %></td>
+                    <td>
+                        <a class="btn btn-show" href="/devices/<%= d.id %>">Show</a>
+                        <a class="btn btn-update" href="/devices/<%= d.id %>/update">Update</a>
+                        <a class="btn btn-remove" href="/devices/<%= d.id %>/delete">Remove</a>
+                    </td>
+                </tr>
+            <% }) %>
+        </table>
+        <%- include('./partials/footer.html') %>
+    </body> 
+</html>

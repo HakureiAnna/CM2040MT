@@ -1,0 +1,146 @@
+/*
+ * this is the CSS stylesheet used to provide basic styling to the application
+ * no CSS framework are used for simplicity and to make adjustment of the content
+ * easier without conforming to any conventions of frameworks
+ */
+* {
+    padding: 0;
+    margin: 0;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    background: #cfd8dc;    
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+}
+
+nav li {
+    padding-left: 1rem;
+}
+
+.text-center {
+    text-align: center;
+}
+
+footer {
+    position: fixed;
+    width: 100%;
+    height: 32px;
+    left: 0;
+    bottom: 0;
+    background: #cfd8dc;    
+}
+
+.btn {
+    border: none;
+    color: white;
+    padding: 12px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    width: 100px;
+    font-size: 16px;
+    transition-duration: 0.4s;
+    border-radius: 8px;
+}
+
+.btn:hover {
+    background-color: white;
+}
+
+.btn-new {
+    background-color: #0ac2ff;
+}
+
+.btn-new:hover {
+    color: #0ac2ff;
+}
+
+.btn-show {
+    background-color: #008cba;
+}
+
+.btn-show:hover {
+    color: #008cba;
+}
+
+.btn-update {
+    background-color: #4caf50;
+}
+
+.btn-update:hover {
+    color: #4caf50;
+}
+
+.btn-remove {    
+    background-color: #f44336;
+}
+
+.btn-remove:hover {
+    color: #f44336;
+}
+
+.btn-menu {
+    background-color: #cfd8dc;
+}
+
+.btn-menu:hover {
+    color: #cfd8dc;
+}
+
+.btn-cancel {
+    background-color: #777777;
+}
+
+.btn-cancel:hover {
+    color: #777777;
+}
+
+table {
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+    text-align: center;
+    border: 2px solid #eee;
+}
+
+th, td {
+    border-bottom: 1px solid #ddd;
+}
+
+.align-right {
+    text-align: right;
+    font-weight: bold;
+    padding-right: 10px;
+}
+
+.align-left {
+    text-align: left;
+    padding-left: 10px;
+}
+
+input[type="text"], input[type="number"], input[type="datetime-local"], select {
+    width: 100%;
+}
+
+input[type="checkbox"] {
+    float: left;
+}
+
+.container {
+    width: 80%;
+    margin-top: 25px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+li.error {
+    color: red;
+}
